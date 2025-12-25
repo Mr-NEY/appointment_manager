@@ -1,6 +1,5 @@
-import 'dart:convert';
-
 import 'package:hive/hive.dart';
+
 part 'appointment_model.g.dart';
 
 @HiveType(typeId: 0)
@@ -30,8 +29,10 @@ class AppointmentModel extends HiveObject {
   double longitude;
 
   @HiveField(8)
-  bool isSynced;
+  String address;
 
+  @HiveField(9)
+  bool isSynced;
   AppointmentModel({
     required this.id,
     required this.title,
@@ -41,7 +42,8 @@ class AppointmentModel extends HiveObject {
     required this.dateTime,
     required this.latitude,
     required this.longitude,
-    this.isSynced = false,
+    required this.address,
+    required this.isSynced,
   });
 
   AppointmentModel copyWith({
@@ -53,6 +55,7 @@ class AppointmentModel extends HiveObject {
     DateTime? dateTime,
     double? latitude,
     double? longitude,
+    String? address,
     bool? isSynced,
   }) {
     return AppointmentModel(
@@ -64,6 +67,7 @@ class AppointmentModel extends HiveObject {
       dateTime: dateTime ?? this.dateTime,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
+      address: address ?? this.address,
       isSynced: isSynced ?? this.isSynced,
     );
   }
@@ -78,59 +82,8 @@ class AppointmentModel extends HiveObject {
       'dateTime': dateTime.millisecondsSinceEpoch,
       'latitude': latitude,
       'longitude': longitude,
+      'address': address,
       'isSynced': isSynced,
     };
-  }
-
-  factory AppointmentModel.fromMap(Map<String, dynamic> map) {
-    return AppointmentModel(
-      id: map['id'] as String,
-      title: map['title'] as String,
-      customerName: map['customerName'] as String,
-      company: map['company'] as String,
-      description: map['description'] as String,
-      dateTime: DateTime.fromMillisecondsSinceEpoch(map['dateTime'] as int),
-      latitude: map['latitude'] as double,
-      longitude: map['longitude'] as double,
-      isSynced: map['isSynced'] as bool,
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory AppointmentModel.fromJson(String source) => AppointmentModel.fromMap(json.decode(source) as Map<String, dynamic>);
-
-  @override
-  String toString() {
-    return 'Appointment(id: $id, title: $title, customerName: $customerName, company: $company, description: $description, dateTime: $dateTime, latitude: $latitude, longitude: $longitude, isSynced: $isSynced)';
-  }
-
-  @override
-  bool operator ==(covariant AppointmentModel other) {
-    if (identical(this, other)) return true;
-  
-    return 
-      other.id == id &&
-      other.title == title &&
-      other.customerName == customerName &&
-      other.company == company &&
-      other.description == description &&
-      other.dateTime == dateTime &&
-      other.latitude == latitude &&
-      other.longitude == longitude &&
-      other.isSynced == isSynced;
-  }
-
-  @override
-  int get hashCode {
-    return id.hashCode ^
-      title.hashCode ^
-      customerName.hashCode ^
-      company.hashCode ^
-      description.hashCode ^
-      dateTime.hashCode ^
-      latitude.hashCode ^
-      longitude.hashCode ^
-      isSynced.hashCode;
-  }
+  }  
 }

@@ -25,14 +25,15 @@ class AppointmentModelAdapter extends TypeAdapter<AppointmentModel> {
       dateTime: fields[5] as DateTime,
       latitude: fields[6] as double,
       longitude: fields[7] as double,
-      isSynced: fields[8] as bool,
+      address: fields[8] as String,
+      isSynced: fields[9] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, AppointmentModel obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -50,6 +51,8 @@ class AppointmentModelAdapter extends TypeAdapter<AppointmentModel> {
       ..writeByte(7)
       ..write(obj.longitude)
       ..writeByte(8)
+      ..write(obj.address)
+      ..writeByte(9)
       ..write(obj.isSynced);
   }
 
