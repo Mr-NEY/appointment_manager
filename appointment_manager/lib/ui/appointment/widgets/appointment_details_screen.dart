@@ -1,11 +1,14 @@
 import 'package:appointment_manager/domain/models/appointment_model.dart';
+import 'package:appointment_manager/ui/appointment/viewmodels/appointment_viewmodel.dart';
+import 'package:appointment_manager/ui/appointment/widgets/add_edit_appointment_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class AppointmentDetailScreen extends StatelessWidget {
   final AppointmentModel appointment;
   const AppointmentDetailScreen({super.key, required this.appointment});
-  
+
   @override
   Widget build(BuildContext context) {
     String formattedDate = DateFormat(
@@ -18,13 +21,21 @@ class AppointmentDetailScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () {
-              Navigator.pushNamed(context, '/add-edit');
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      AddEditAppointmentScreen(appointment: appointment),
+                ),
+              );
             },
           ),
           IconButton(
             icon: const Icon(Icons.delete),
             onPressed: () {
-              // TODO: delete logic
+              context.read<AppointmentViewmodel>().deleteAppointment(
+                appointment.id,
+              );
               Navigator.pop(context);
             },
           ),
@@ -46,7 +57,7 @@ class AppointmentDetailScreen extends StatelessWidget {
             ListTile(title: Text('Date & Time'), subtitle: Text(formattedDate)),
             ListTile(
               title: Text('Location'),
-              subtitle: Text(appointment.address),
+              subtitle: Text("Near ${appointment.address}"),
             ),
           ],
         ),
@@ -54,4 +65,3 @@ class AppointmentDetailScreen extends StatelessWidget {
     );
   }
 }
-

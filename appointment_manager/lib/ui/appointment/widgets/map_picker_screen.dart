@@ -17,6 +17,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
   LatLng? selectedLocation;
   String selectedAddress = '';
   bool locationGranted = false;
+  bool locationLoaded = false;
 
   final LatLng initialLocation = const LatLng(16.8409, 96.1735); // Yangon
 
@@ -72,6 +73,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
       if (landmark != null) {
         setState(() {
           selectedAddress = landmark;
+          locationLoaded = true;
         });
         return;
       }
@@ -85,6 +87,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
         setState(() {
           selectedAddress =
               '${place.thoroughfare ?? ''} ${place.subLocality ?? ''}'.trim();
+          locationLoaded = true;
         });
       }
     } catch (e) {
@@ -110,7 +113,8 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
             onPressed: selectedLocation == null
                 ? null
                 : () {
-                    Navigator.pop(context, 
+                    Navigator.pop(
+                      context,
                       LocationModel(
                         latitude: selectedLocation!.latitude,
                         longitude: selectedLocation!.longitude,
@@ -121,7 +125,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
             child: Text(
               'DONE',
               style: TextStyle(
-                color: selectedLocation != null ? Colors.blue : Colors.grey,
+                color: locationLoaded ? Colors.blue : Colors.grey,
                 fontWeight: FontWeight.w600,
               ),
             ),

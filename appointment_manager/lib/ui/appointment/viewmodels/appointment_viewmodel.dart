@@ -40,6 +40,34 @@ class AppointmentViewmodel extends ChangeNotifier {
     loadAppointments();
   }
 
+  Future<void> updateAppointment({
+    required String id,
+    required String title,
+    required String customerName,
+    required String company,
+    required String description,
+    required DateTime dateTime,
+    required double latitude,
+    required double longitude,
+    required String address,
+  }) async {
+    final appointment = AppointmentModel(
+      id: id,
+      title: title,
+      customerName: customerName,
+      company: company,
+      description: description,
+      dateTime: dateTime,
+      latitude: latitude,
+      longitude: longitude,
+      address: address,
+      isSynced: false,
+    );
+
+    await _repo.addAppointment(appointment);
+    loadAppointments();
+  }
+
   Future<void> deleteAppointment(String id) async {
     await _repo.deleteAppointment(id);
     loadAppointments();

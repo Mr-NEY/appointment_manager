@@ -12,7 +12,7 @@ class LandmarkService {
         '?format=jsonv2'
         '&lat=${location.latitude}'
         '&lon=${location.longitude}'
-        '&zoom=18'
+        '&zoom=24'
         '&addressdetails=1';
 
     try {

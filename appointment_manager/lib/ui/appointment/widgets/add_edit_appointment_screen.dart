@@ -1,10 +1,12 @@
+import 'package:appointment_manager/domain/models/appointment_model.dart';
 import 'package:appointment_manager/ui/appointment/viewmodels/appointment_viewmodel.dart';
 import 'package:appointment_manager/ui/appointment/widgets/map_picker_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AddEditAppointmentScreen extends StatefulWidget {
-  const AddEditAppointmentScreen({super.key});
+  final AppointmentModel? appointment;
+  const AddEditAppointmentScreen({super.key, this.appointment});
 
   @override
   State<AddEditAppointmentScreen> createState() =>
@@ -21,6 +23,25 @@ class _AddEditAppointmentScreenState extends State<AddEditAppointmentScreen> {
   double? latitude;
   double? longitude;
   String? address;
+
+  @override
+  void initState() {
+    if (widget.appointment != null) {
+      initializeAppointment(widget.appointment!);
+    }
+    super.initState();
+  }
+
+  void initializeAppointment(AppointmentModel appointment) {
+    titleController.text = appointment.title;
+    customerNameController.text = appointment.customerName;
+    companyController.text = appointment.company;
+    descriptionController.text = appointment.description;
+    selectedDate = appointment.dateTime;
+    latitude = appointment.latitude;
+    longitude = appointment.longitude;
+    address = appointment.address;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +172,20 @@ class _AddEditAppointmentScreenState extends State<AddEditAppointmentScreen> {
         ).showSnackBar(SnackBar(content: Text('Please pick a location')));
         return;
       } else {
-        context.read<AppointmentViewmodel>().addAppointment(
+        if (widget.appointment != null) {
+          context.read<AppointmentViewmodel>().updateAppointment(
+            id: widget.appointment!.id,
+            title: titleController.text.trim(),
+            customerName: customerNameController.text.trim(),
+            company: companyController.text.trim(),
+            description: descriptionController.text.trim(),
+            dateTime: selectedDate!,
+            latitude: latitude!,
+            longitude: longitude!,
+            address: address!,
+          );
+        } else {
+          context.read<AppointmentViewmodel>().addAppointment(
           title: titleController.text.trim(),
           customerName: customerNameController.text.trim(),
           company: companyController.text.trim(),
@@ -161,6 +195,7 @@ class _AddEditAppointmentScreenState extends State<AddEditAppointmentScreen> {
           longitude: longitude!,
           address: address!,
         );
+        }
         Navigator.pop(context);
       }
     }
