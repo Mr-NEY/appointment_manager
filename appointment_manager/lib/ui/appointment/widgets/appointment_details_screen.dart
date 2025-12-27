@@ -33,7 +33,7 @@ class AppointmentDetailScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.delete),
             onPressed: () {
-              context.read<AppointmentViewmodel>().deleteAppointment(
+              context.read<AppointmentViewModel>().deleteAppointment(
                 appointment.id,
               );
               Navigator.pop(context);

@@ -18,13 +18,13 @@ class _AppointmentListScreenState extends State<AppointmentListScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<AppointmentViewmodel>().loadAppointments();
+      context.read<AppointmentViewModel>().loadAppointments();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final appointmentViewmodel = context.watch<AppointmentViewmodel>();
+    final appointmentViewmodel = context.watch<AppointmentViewModel>();
     List<AppointmentModel> appointments = appointmentViewmodel.appointments;
     return Scaffold(
       appBar: AppBar(
@@ -70,7 +70,21 @@ class _AppointmentListScreenState extends State<AppointmentListScreen> {
                     vertical: 6,
                   ),
                   child: ListTile(
-                    title: Text(appointments[index].title),
+                    title: Row(
+                      children: [
+                        Text(appointments[index].title),
+                        SizedBox(width: 8),
+                        Icon(
+                          appointments[index].isSynced
+                              ? Icons.cloud_done
+                              : Icons.cloud_off,
+                          color: appointments[index].isSynced
+                              ? Colors.green
+                              : Colors.red,
+                          size: 10,
+                        ),
+                      ],
+                    ),
                     subtitle: Text(
                       "${appointments[index].customerName} - ${appointments[index].company}",
                     ),

@@ -14,7 +14,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => AppointmentViewmodel()),
+        ChangeNotifierProvider(create: (context) => AppointmentViewModel()),
       ],
       child: const MyApp(),
     ),

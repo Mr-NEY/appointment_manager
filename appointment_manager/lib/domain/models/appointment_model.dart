@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:hive/hive.dart';
 
 part 'appointment_model.g.dart';
@@ -83,7 +85,61 @@ class AppointmentModel extends HiveObject {
       'latitude': latitude,
       'longitude': longitude,
       'address': address,
-      'isSynced': isSynced,
     };
   }  
+
+  factory AppointmentModel.fromMap(Map<String, dynamic> map) {
+    return AppointmentModel(
+      id: map['id'] as String,
+      title: map['title'] as String,
+      customerName: map['customerName'] as String,
+      company: map['company'] as String,
+      description: map['description'] as String,
+      dateTime: DateTime.fromMillisecondsSinceEpoch(map['dateTime'] as int),
+      latitude: map['latitude'] as double,
+      longitude: map['longitude'] as double,
+      address: map['address'] as String,
+      isSynced: true,
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory AppointmentModel.fromJson(String source) => AppointmentModel.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  @override
+  String toString() {
+    return 'AppointmentModel(id: $id, title: $title, customerName: $customerName, company: $company, description: $description, dateTime: $dateTime, latitude: $latitude, longitude: $longitude, address: $address, isSynced: $isSynced)';
+  }
+
+  @override
+  bool operator ==(covariant AppointmentModel other) {
+    if (identical(this, other)) return true;
+  
+    return 
+      other.id == id &&
+      other.title == title &&
+      other.customerName == customerName &&
+      other.company == company &&
+      other.description == description &&
+      other.dateTime == dateTime &&
+      other.latitude == latitude &&
+      other.longitude == longitude &&
+      other.address == address &&
+      other.isSynced == isSynced;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+      title.hashCode ^
+      customerName.hashCode ^
+      company.hashCode ^
+      description.hashCode ^
+      dateTime.hashCode ^
+      latitude.hashCode ^
+      longitude.hashCode ^
+      address.hashCode ^
+      isSynced.hashCode;
+  }
 }

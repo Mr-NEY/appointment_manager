@@ -173,8 +173,19 @@ class _AddEditAppointmentScreenState extends State<AddEditAppointmentScreen> {
         return;
       } else {
         if (widget.appointment != null) {
-          context.read<AppointmentViewmodel>().updateAppointment(
-            id: widget.appointment!.id,
+          widget.appointment!.title = titleController.text.trim();
+          widget.appointment!.customerName = customerNameController.text.trim();
+          widget.appointment!.company = companyController.text.trim();
+          widget.appointment!.description = descriptionController.text.trim();
+          widget.appointment!.dateTime = selectedDate!;
+          widget.appointment!.latitude = latitude!;
+          widget.appointment!.longitude = longitude!;
+          widget.appointment!.address = address!;
+          context.read<AppointmentViewModel>().updateAppointment(
+            widget.appointment!,
+          );
+        } else {
+          context.read<AppointmentViewModel>().addAppointment(
             title: titleController.text.trim(),
             customerName: customerNameController.text.trim(),
             company: companyController.text.trim(),
@@ -184,17 +195,6 @@ class _AddEditAppointmentScreenState extends State<AddEditAppointmentScreen> {
             longitude: longitude!,
             address: address!,
           );
-        } else {
-          context.read<AppointmentViewmodel>().addAppointment(
-          title: titleController.text.trim(),
-          customerName: customerNameController.text.trim(),
-          company: companyController.text.trim(),
-          description: descriptionController.text.trim(),
-          dateTime: selectedDate!,
-          latitude: latitude!,
-          longitude: longitude!,
-          address: address!,
-        );
         }
         Navigator.pop(context);
       }

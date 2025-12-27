@@ -1,8 +1,8 @@
-import 'package:appointment_manager/data/repositories/appointment/appointment_repository.dart';
 import 'package:appointment_manager/domain/models/appointment_model.dart';
 import 'package:hive/hive.dart';
 
-class AppointmentLocalRepository extends AppointmentRepository {
+class LocalDbService {
+  
   final Box<AppointmentModel> _box = Hive.box<AppointmentModel>('appointments');
 
   List<AppointmentModel> getAllAppointments() {
