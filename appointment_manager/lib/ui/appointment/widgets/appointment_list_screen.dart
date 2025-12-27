@@ -25,7 +25,8 @@ class _AppointmentListScreenState extends State<AppointmentListScreen> {
   @override
   Widget build(BuildContext context) {
     final appointmentViewmodel = context.watch<AppointmentViewModel>();
-    List<AppointmentModel> appointments = appointmentViewmodel.appointments;
+    List<AppointmentModel> appointments =
+        appointmentViewmodel.fileteredAppointments;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Appointments'),
@@ -56,7 +57,7 @@ class _AppointmentListScreenState extends State<AppointmentListScreen> {
                 border: OutlineInputBorder(),
               ),
               onChanged: (value) {
-                // TODO: search logic
+                context.read<AppointmentViewModel>().search(value);
               },
             ),
           ),

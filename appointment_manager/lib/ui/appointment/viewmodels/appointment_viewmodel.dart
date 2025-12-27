@@ -8,8 +8,11 @@ class AppointmentViewModel extends ChangeNotifier {
   final AppointmentRepository _repo = AppointmentRepository();
   final ConnectivityService _connectivity = ConnectivityService();
 
-  List<AppointmentModel> appointments = [];
+  List<AppointmentModel> _appointments = [];
+  List<AppointmentModel> _filteredAppointments = [];
   bool isOnline = false;
+
+  List<AppointmentModel> get fileteredAppointments => _filteredAppointments;
 
   AppointmentViewModel() {
     _init();
@@ -37,7 +40,8 @@ class AppointmentViewModel extends ChangeNotifier {
   }
 
   void loadAppointments() {
-    appointments = _repo.getAllAppointments();
+    _appointments = _repo.getAllAppointments();
+    _filteredAppointments = _appointments;
     notifyListeners();
   }
 
@@ -77,4 +81,10 @@ class AppointmentViewModel extends ChangeNotifier {
     await _repo.deleteAppointment(id);
     loadAppointments();
   }
+
+  void search(String keyword) {
+  _filteredAppointments = _repo.searchAppointments(keyword);
+  notifyListeners();
+}
+
 }

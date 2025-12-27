@@ -82,4 +82,22 @@ class AppointmentRepository {
   Future<void> clearAll() async {
     await _local.clearAll();
   }
+
+  List<AppointmentModel> searchAppointments(String keyword) {
+    final all = _local.getAllAppointments();
+
+    if (keyword.isEmpty) return all;
+
+    final lower = keyword.toLowerCase();
+
+    return all
+        .where(
+          (a) =>
+              a.title.toLowerCase().contains(lower) ||
+              a.customerName.toLowerCase().contains(lower) ||
+              a.company.toLowerCase().contains(lower),
+        )
+        .toList();
+  }
+
 }

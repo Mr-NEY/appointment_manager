@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
@@ -41,11 +42,15 @@ class LandmarkService {
         }
         return "Unknown Location";
       } else {
-        print("OSM Error: ${response.statusCode}");
+        if (kDebugMode) {
+          print("OSM Error: ${response.statusCode}");
+        }
         return null;
       }
     } catch (e) {
-      print("Network Error: $e");
+      if (kDebugMode) {
+        print("Network Error: $e");
+      }
       return null;
     }
   }
