@@ -57,8 +57,16 @@ class AppointmentDetailScreen extends StatelessWidget {
             ),
             ListTile(title: Text('Date & Time'), subtitle: Text(formattedDate)),
             ListTile(
-              title: Text('Location'),
-              subtitle: Text("Tap to view map location"),
+              title: Row(
+                children: [
+                  Expanded(child: Text('Location')),
+                  Text(
+                    "* Tap to view",
+                    style: TextStyle(color: Colors.redAccent, fontSize: 10),
+                  ),
+                ],
+              ),
+              subtitle: Text(appointment.address),
               onTap: () {
                 MapLauncherHelper.openGoogleMaps(
                   latitude: appointment.latitude,

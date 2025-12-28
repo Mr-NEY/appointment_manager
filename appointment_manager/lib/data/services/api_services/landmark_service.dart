@@ -31,7 +31,19 @@ class LandmarkService {
 
         if (data['address'] != null) {
           final address = data['address'];
-          return "${address['road']}, ${address['quarter']}, ${address['suburb']}, ${address['city']}";
+          List<String> parts =
+              [
+                    address['road'],
+                    address['quarter'],
+                    address['suburb'],
+                    address['city'],
+                    address['state'],
+                  ]
+                  .where((part) => part != null && part.toString().isNotEmpty)
+                  .map((part) => part.toString())
+                  .toList();
+
+          return parts.join(', ');
         } else if (data['display_name'] != null && data['display_name'] != "") {
           List<String> parts = data['display_name'].split(',');
           return parts.take(6).join(',').trim();

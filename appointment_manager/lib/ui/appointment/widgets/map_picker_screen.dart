@@ -2,6 +2,7 @@ import 'package:appointment_manager/data/services/api_services/landmark_service.
 import 'package:appointment_manager/domain/models/location_model.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -18,8 +19,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
   String selectedAddress = '';
   bool locationGranted = false;
   bool locationLoaded = false;
-
-  final LatLng initialLocation = const LatLng(16.8409, 96.1735); // Yangon
+  LatLng initialLocation = const LatLng(16.8661, 96.1951);
 
   Future<void> requestLocationPermission() async {
     final status = await Permission.location.request();
@@ -28,41 +28,25 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
       setState(() {
         locationGranted = true;
       });
+
+      Position position = await Geolocator.getCurrentPosition();
+      LatLng currentLatLng = LatLng(position.latitude, position.longitude);
+
+      mapController?.animateCamera(
+        CameraUpdate.newLatLngZoom(currentLatLng, 15),
+      );
+
+      _getAddressFromLatLng(currentLatLng);
     }
 
     if (status.isDenied) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Location permission is required to show your current location.',
-          ),
-        ),
+        const SnackBar(content: Text('Location permission is required.')),
       );
     }
 
     if (status.isPermanentlyDenied) {
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: const Text('Permission Required'),
-          content: const Text(
-            'Please enable location permission from app settings.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                openAppSettings();
-                Navigator.pop(context);
-              },
-              child: const Text('Open Settings'),
-            ),
-          ],
-        ),
-      );
+      _showPermissionDialog();
     }
   }
 
@@ -77,6 +61,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
         });
         return;
       }
+
       final placemarks = await placemarkFromCoordinates(
         position.latitude,
         position.longitude,
@@ -86,13 +71,38 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
         final place = placemarks.first;
         setState(() {
           selectedAddress =
-              '${place.thoroughfare ?? ''} ${place.subLocality ?? ''}'.trim();
+              '${place.street}, ${place.subLocality}, ${place.locality}'.trim();
           locationLoaded = true;
         });
       }
     } catch (e) {
       debugPrint('Reverse geocode error: $e');
     }
+  }
+
+  void _showPermissionDialog() {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Permission Required'),
+        content: const Text(
+          'Please enable location permission from app settings.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              openAppSettings();
+              Navigator.pop(context);
+            },
+            child: const Text('Open Settings'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -110,7 +120,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
         title: const Text('Pick Location'),
         actions: [
           TextButton(
-            onPressed: selectedLocation == null
+            onPressed: !locationLoaded
                 ? null
                 : () {
                     Navigator.pop(
@@ -132,35 +142,52 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
           ),
         ],
       ),
-      body: SizedBox(
-        height: double.infinity,
-        width: double.infinity,
-        child: GoogleMap(
-          compassEnabled: true,
-          initialCameraPosition: CameraPosition(
-            target: initialLocation,
-            zoom: 14,
+      body: Stack(
+        children: [
+          GoogleMap(
+            compassEnabled: true,
+            initialCameraPosition: CameraPosition(
+              target: initialLocation,
+              zoom: 14,
+            ),
+            onMapCreated: (controller) {
+              mapController = controller;
+            },
+            myLocationEnabled: locationGranted,
+            myLocationButtonEnabled: locationGranted,
+            onTap: (latLng) async {
+              setState(() {
+                locationLoaded = false;
+                selectedLocation = latLng;
+              });
+              await _getAddressFromLatLng(latLng);
+            },
+            markers: selectedLocation == null
+                ? {}
+                : {
+                    Marker(
+                      markerId: const MarkerId('selected_location'),
+                      position: selectedLocation!,
+                    ),
+                  },
           ),
-          onMapCreated: (controller) {
-            mapController = controller;
-          },
-          myLocationEnabled: locationGranted,
-          myLocationButtonEnabled: locationGranted,
-          onTap: (latLng) async {
-            setState(() {
-              selectedLocation = latLng;
-            });
-            await _getAddressFromLatLng(latLng);
-          },
-          markers: selectedLocation == null
-              ? {}
-              : {
-                  Marker(
-                    markerId: const MarkerId('selected_location'),
-                    position: selectedLocation!,
+          if (selectedAddress.isNotEmpty)
+            Positioned(
+              bottom: 20,
+              left: 10,
+              right: 10,
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Text(
+                    selectedAddress,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                },
-        ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
