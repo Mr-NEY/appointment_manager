@@ -48,11 +48,12 @@ Repository (AppointmentRepository)
 
 ## Getting Started
 
-1. Clone the repository:
 ```bash
 git clone https://github.com/Mr-NEY/appointment_manager.git
 
 flutter pub get
+
+add  android\local.properties ->MAPS_API_KEY= your_google_map_key
 
 flutter run
 
