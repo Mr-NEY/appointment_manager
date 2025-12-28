@@ -120,22 +120,24 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
         title: const Text('Pick Location'),
         actions: [
           TextButton(
-            onPressed: !locationLoaded
-                ? null
-                : () {
-                    Navigator.pop(
+            onPressed: () {
+              (locationLoaded && selectedLocation != null)
+                  ? Navigator.pop(
                       context,
                       LocationModel(
                         latitude: selectedLocation!.latitude,
                         longitude: selectedLocation!.longitude,
                         address: selectedAddress,
                       ),
-                    );
-                  },
+                    )
+                  : null;
+            },
             child: Text(
               'DONE',
               style: TextStyle(
-                color: locationLoaded ? Colors.blue : Colors.grey,
+                color: (locationLoaded && selectedLocation != null)
+                    ? Colors.blue
+                    : Colors.grey,
                 fontWeight: FontWeight.w600,
               ),
             ),
