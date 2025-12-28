@@ -1,5 +1,6 @@
 import 'package:appointment_manager/data/services/api_services/appointment_api_service.dart';
 import 'package:appointment_manager/data/services/local_services/local_db_service.dart';
+import 'package:appointment_manager/domain/models/appointment_filter_model.dart';
 import 'package:appointment_manager/domain/models/appointment_model.dart';
 import 'package:appointment_manager/utils/connectivity_utils.dart';
 
@@ -100,4 +101,52 @@ class AppointmentRepository {
         .toList();
   }
 
+  List<AppointmentModel> filterByDate(AppointmentDateFilter filter) {
+    final all = _local.getAllAppointments();
+    final now = DateTime.now();
+
+    return all.where((a) {
+      final date = a.dateTime;
+
+      switch (filter.type) {
+        case DateFilter.today:
+          return _isSameDay(date, now);
+
+        case DateFilter.upcoming:
+          return date.isAfter(now);
+
+        case DateFilter.past:
+          return date.isBefore(now);
+
+        case DateFilter.custom:
+          if (filter.fromDate != null && filter.toDate != null) {
+            final from = DateTime(
+              filter.fromDate!.year,
+              filter.fromDate!.month,
+              filter.fromDate!.day,
+            );
+
+            final to = DateTime(
+              filter.toDate!.year,
+              filter.toDate!.month,
+              filter.toDate!.day,
+              23,
+              59,
+              59,
+            );
+
+            return date.isAfter(from.subtract(const Duration(seconds: 1))) &&
+                date.isBefore(to.add(const Duration(seconds: 1)));
+          }
+          return true;
+
+        case DateFilter.all:
+          return true;
+      }
+    }).toList();
+  }
+
+  bool _isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
+  }
 }

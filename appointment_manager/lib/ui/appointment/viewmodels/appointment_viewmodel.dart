@@ -1,4 +1,5 @@
 import 'package:appointment_manager/data/repositories/appointment/appointment_repository.dart';
+import 'package:appointment_manager/domain/models/appointment_filter_model.dart';
 import 'package:appointment_manager/domain/models/appointment_model.dart';
 import 'package:appointment_manager/utils/connectivity_utils.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ class AppointmentViewModel extends ChangeNotifier {
 
   List<AppointmentModel> _appointments = [];
   List<AppointmentModel> _filteredAppointments = [];
+  AppointmentDateFilter currentFilter = const AppointmentDateFilter();
   bool isOnline = false;
 
   List<AppointmentModel> get fileteredAppointments => _filteredAppointments;
@@ -83,8 +85,28 @@ class AppointmentViewModel extends ChangeNotifier {
   }
 
   void search(String keyword) {
-  _filteredAppointments = _repo.searchAppointments(keyword);
-  notifyListeners();
-}
+    final baseList = _repo.filterByDate(currentFilter);
 
+    if (keyword.isEmpty) {
+      _filteredAppointments = baseList;
+    } else {
+      final lower = keyword.toLowerCase();
+      _filteredAppointments = baseList
+          .where(
+            (a) =>
+                a.title.toLowerCase().contains(lower) ||
+                a.customerName.toLowerCase().contains(lower) ||
+                a.company.toLowerCase().contains(lower),
+          )
+          .toList();
+    }
+
+    notifyListeners();
+  }
+
+  void applyDateFilter(AppointmentDateFilter filter) {
+    currentFilter = filter;
+    _filteredAppointments = _repo.filterByDate(filter);
+    notifyListeners();
+  }
 }

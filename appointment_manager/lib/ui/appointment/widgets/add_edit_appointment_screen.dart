@@ -2,6 +2,7 @@ import 'package:appointment_manager/domain/models/appointment_model.dart';
 import 'package:appointment_manager/ui/appointment/viewmodels/appointment_viewmodel.dart';
 import 'package:appointment_manager/ui/appointment/widgets/map_picker_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class AddEditAppointmentScreen extends StatefulWidget {
@@ -71,7 +72,7 @@ class _AddEditAppointmentScreenState extends State<AddEditAppointmentScreen> {
                 title: Text(
                   selectedDate == null
                       ? 'Select Date & Time'
-                      : selectedDate.toString(),
+                      : DateFormat('yyyy-MM-dd hh:mm a').format(selectedDate!),
                 ),
                 trailing: const Icon(Icons.calendar_today),
                 onTap: _pickDateTime,

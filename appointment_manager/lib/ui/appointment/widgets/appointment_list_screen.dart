@@ -1,6 +1,8 @@
+import 'package:appointment_manager/domain/models/appointment_filter_model.dart';
 import 'package:appointment_manager/domain/models/appointment_model.dart';
 import 'package:appointment_manager/ui/appointment/viewmodels/appointment_viewmodel.dart';
 import 'package:appointment_manager/ui/appointment/widgets/appointment_details_screen.dart';
+import 'package:appointment_manager/ui/appointment/widgets/filter_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -33,8 +35,17 @@ class _AppointmentListScreenState extends State<AppointmentListScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_alt),
-            onPressed: () {
-              // TODO: open filter dialog
+            onPressed: () async {
+              final result = await showDialog<AppointmentDateFilter>(
+                context: context,
+                builder: (context) => FilterDialog(
+                  currentFilter: appointmentViewmodel.currentFilter,
+                ),
+              );
+
+              if (result != null) {
+                appointmentViewmodel.applyDateFilter(result);
+              }
             },
           ),
         ],

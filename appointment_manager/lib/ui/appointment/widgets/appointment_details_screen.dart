@@ -1,6 +1,7 @@
 import 'package:appointment_manager/domain/models/appointment_model.dart';
 import 'package:appointment_manager/ui/appointment/viewmodels/appointment_viewmodel.dart';
 import 'package:appointment_manager/ui/appointment/widgets/add_edit_appointment_screen.dart';
+import 'package:appointment_manager/utils/map_launcher_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -57,7 +58,13 @@ class AppointmentDetailScreen extends StatelessWidget {
             ListTile(title: Text('Date & Time'), subtitle: Text(formattedDate)),
             ListTile(
               title: Text('Location'),
-              subtitle: Text("Near ${appointment.address}"),
+              subtitle: Text("Tap to view map location"),
+              onTap: () {
+                MapLauncherHelper.openGoogleMaps(
+                  latitude: appointment.latitude,
+                  longitude: appointment.longitude,
+                );
+              },
             ),
           ],
         ),

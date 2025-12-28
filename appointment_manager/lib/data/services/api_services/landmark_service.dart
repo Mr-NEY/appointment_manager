@@ -29,16 +29,12 @@ class LandmarkService {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
-        // OSM returns 'name' for major landmarks, or parts of the 'address'
-        if (data['display_name'] != null && data['display_name'] != "") {
-          return data['display_name'];
-        } else if (data['address'] != null) {
-          // Fallback: Use the most specific part of the address
+        if (data['address'] != null) {
           final address = data['address'];
-          return address['amenity'] ??
-              address['building'] ??
-              address['tourism'] ??
-              address['road'];
+          return "${address['road']}, ${address['quarter']}, ${address['suburb']}, ${address['city']}";
+        } else if (data['display_name'] != null && data['display_name'] != "") {
+          List<String> parts = data['display_name'].split(',');
+          return parts.take(6).join(',').trim();
         }
         return "Unknown Location";
       } else {
